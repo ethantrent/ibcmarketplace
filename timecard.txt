@@ -1,0 +1,24 @@
+4/22/2025 | 10:15 | 1hr | Class - Introduction/Syllabus
+4/23/2025 | 1:00  | 30min | Research Project Ideas
+4/24/2025 | 10:15 | 1hr | Class - Basic Technical Knowledge
+4/24/2025 | 1:00  | 1hr | Continue Research/Selected Project
+4/25/2025 | 12:00  | 2hr | Document Project/Learn Technologies
+4/29/2025 | 10:15 | 1hr | Class - Task Estimation and Subdivision
+4/29/2025 | 11:15 | 2hr | Continue Learning Technologies Required
+5/1/2025  | 10:15 | 1hr | Class - Demo Day
+5/5/2025 | 7:30 | 2hr | Begin Project
+5/6/2025 | 10:15 | 1hr | Class - Keyboarding Efficiency
+5/6/2025 | 1:30 | 2hr | Learn Spring Boot 
+5/8/2025 | 10:15 | 1hr | Class - Project Management Tools
+5/10/2025 | 11:00 | 2hr | Complete Spring Boot, Begin React Learning
+5/13/2025 | 10:15 | 1hr | Class - Version Control with Git
+5/14/2025 | 8:00 | 2hr | Creating Classes and MySQL
+5/15/2025 | 10:15 | 1hr | Class - Demo Day
+5/20/2025 | 8:30 | 1hr 30min | Completed database
+5/20/2025 | 10:15 | 1hr | Class - Project Management Principles
+5/22/2025 | 10:15 | 1hr | Class - Software Development Life Cycle
+5/23/2025 | 9:00 | 2hr | Backend
+5/26/2025 | 3:00 | 1hr | Backend
+5/27/2025 | 10:15 | 1hr | Class - Software Testing
+5/27/2025 | 8:00 | 1hr | Backend
+5/27/2025 | 10:15 | 1hr | Class - Demo Day

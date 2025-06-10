@@ -4,10 +4,11 @@ import java.util.List;
 
 import com.byui.ibcmarketplace.model.Product;
 import com.byui.ibcmarketplace.request.AddProductRequest;
+import com.byui.ibcmarketplace.request.ProductUpdateRequest;
 
 public interface IProductService {
     Product addProducts(AddProductRequest product);
-    Product updateProduct(Product product, Long productId);
+    Product updateProduct(ProductUpdateRequest product, Long productId);
     Product getProductById(Long productId);
     void deleteProductId(Long productId);
 

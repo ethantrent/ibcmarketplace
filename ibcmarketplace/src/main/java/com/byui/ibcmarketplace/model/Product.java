@@ -1,6 +1,7 @@
 package com.byui.ibcmarketplace.model;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -36,6 +37,12 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
+
+    @OneToMany(mappedBy = "product")
+    private Set<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "product")
+    private Set<CartItem> cartItems;
     
     public Product(String name, String brand, BigDecimal price, int inventory, 
                   String description, Category category) {

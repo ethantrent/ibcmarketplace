@@ -22,3 +22,7 @@
 5/27/2025 | 10:15 | 1hr | Class - Software Testing
 5/27/2025 | 8:00 | 1hr | Backend
 5/27/2025 | 10:15 | 1hr | Class - Demo Day
+5/29/2025 | 7:00 | 2hr | Backend
+6/1/2025 | 5:00 | 2hr | Backend
+6/3/2025 | 8:00 | 2hr | Backend
+6/9/2025 | 7:35 | 2hr | Backend

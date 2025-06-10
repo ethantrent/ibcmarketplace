@@ -1,32 +1,45 @@
 package com.byui.ibcmarketplace.service.product;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.byui.ibcmarketplace.model.Cart;
+import com.byui.ibcmarketplace.model.CartItem;
 import com.byui.ibcmarketplace.model.Category;
+import com.byui.ibcmarketplace.model.Order;
+import com.byui.ibcmarketplace.model.OrderItem;
 import com.byui.ibcmarketplace.model.Product;
 import com.byui.ibcmarketplace.request.AddProductRequest;
-import jakarta.persistence.EntityExistsException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import com.byui.ibcmarketplace.request.ProductUpdateRequest;
+import com.byui.ibcmarketplace.service.cart.CartItemRepository;
+import com.byui.ibcmarketplace.service.cart.CartRepository;
+import com.byui.ibcmarketplace.service.category.CategoryService;
+import com.byui.ibcmarketplace.service.order.OrderItemRepository;
+import com.byui.ibcmarketplace.service.order.OrderRepository;
 
-import java.util.List;
-import java.util.Optional;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-
 public class ProductService implements IProductService {
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
+    private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
 
     @Override
-    public Product addProducts(AddProductRequest product) {
+    public Product addProducts(AddProductRequest request) {
         if (productExists(request.getName(), request.getBrand())) {
-            throw new EntityExistsException(request.getName() + "already exists!");
+            throw new EntityExistsException(request.getName() + " already exists!");
         }
-        Category category = Optional.ofNullable(categoryRepository.findByName((request.getCategory().getName()))
-                .orElseGet(() -> {
-                    Category newCategory = new Category(request.getCategory().getName());
-                    return categoryRepository.save(newCategory);
-                });
+        
+        Category category = categoryService.getCategoryByName(request.getCategory().getName());
         request.setCategory(category);
         return productRepository.save(createProduct(request, category));
     }
@@ -46,18 +59,56 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product updateProduct(Product product, Long productId) {
-        return null;
+    public Product updateProduct(ProductUpdateRequest request, Long productId) {
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+        
+        existingProduct.setName(request.getName());
+        existingProduct.setBrand(request.getBrand());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setInventory(request.getInventory());
+        existingProduct.setDescription(request.getDescription());
+        
+        if (request.getCategory() != null) {
+            Category category = categoryService.getCategoryByName(request.getCategory().getName());
+            existingProduct.setCategory(category);
+        }
+        
+        return productRepository.save(existingProduct);
     }
 
     @Override
+    @Transactional
     public void deleteProductId(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
 
+        // Remove product from any orders
+        List<OrderItem> orderItems = orderItemRepository.findByProduct(product);
+        orderItems.forEach(item -> {
+            Order order = item.getOrder();
+            order.removeItem(item);
+            // Save the updated order
+            orderRepository.save(order);
+        });
+
+        // Remove product from any active carts
+        List<CartItem> cartItems = cartItemRepository.findByProduct(product);
+        cartItems.forEach(item -> {
+            Cart cart = item.getCart();
+            cart.removeItem(item);
+            // Save the updated cart
+            cartRepository.save(cart);
+        });
+
+        // Perform the delete
+        productRepository.delete(product);
     }
 
     @Override
     public Product getProductById(Long productId) {
-        return productRepository.findById(productId).orElseThrow();
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
     }
 
     @Override

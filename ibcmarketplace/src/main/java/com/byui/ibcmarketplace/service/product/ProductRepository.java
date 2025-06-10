@@ -1,10 +1,11 @@
 package com.byui.ibcmarketplace.service.product;
 
-import com.byui.ibcmarketplace.model.Product;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
+import com.byui.ibcmarketplace.model.Product;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategoryNameAndBrand(String category, String brand);
@@ -14,10 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByBrandAndName(String brand, String name);
 
     @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Product> findByName(String name);
 
     List<Product> findByBrand(String brand);
-
-    List<Product> findByName(String name);
 
     boolean existsByNameAndBrand(String name, String brand);
 }

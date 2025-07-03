@@ -38,14 +38,12 @@ public class CategoryService implements ICategoryService {
         Category existingCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + categoryId));
 
-        // Check if the new name conflicts with another category
         if (!existingCategory.getName().equals(request.getName()) && 
             categoryRepository.existsByName(request.getName())) {
             throw new EntityExistsException("Category with name '" + request.getName() + "' already exists");
         }
 
-        // Update products to reflect the category name change
-        List<Product> products = productRepository.findByCategory(existingCategory.getName());
+        List<Product> products = productRepository.findByCategoryName(existingCategory.getName());
         products.forEach(product -> product.setCategory(existingCategory));
 
         existingCategory.setName(request.getName());
@@ -58,8 +56,7 @@ public class CategoryService implements ICategoryService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + categoryId));
 
-        // Check if category has any products
-        List<Product> products = productRepository.findByCategory(category.getName());
+        List<Product> products = productRepository.findByCategoryName(category.getName());
         if (!products.isEmpty()) {
             StringBuilder errorMessage = new StringBuilder("Cannot delete category that has products. Product IDs: ");
             products.forEach(product -> errorMessage.append(product.getId()).append(", "));
@@ -92,6 +89,6 @@ public class CategoryService implements ICategoryService {
     @Override
     public List<Product> getProductsByCategory(Long categoryId) {
         Category category = getCategoryById(categoryId);
-        return productRepository.findByCategory(category.getName());
+        return productRepository.findByCategoryName(category.getName());
     }
 } 

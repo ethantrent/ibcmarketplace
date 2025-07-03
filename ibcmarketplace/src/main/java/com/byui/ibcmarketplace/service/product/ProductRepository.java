@@ -10,7 +10,7 @@ import com.byui.ibcmarketplace.model.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategoryNameAndBrand(String category, String brand);
 
-    List<Product> findByCategory(String category);
+    List<Product> findByCategoryName(String category);
 
     List<Product> findByBrandAndName(String brand, String name);
 

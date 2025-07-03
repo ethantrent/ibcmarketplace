@@ -9,6 +9,7 @@ import com.byui.ibcmarketplace.model.Image;
 
 public interface IImageService {
     Image uploadImage(MultipartFile file, Long productId);
+    Image updateImage(Long imageId, MultipartFile file);
     Image getImageById(Long imageId);
     List<Image> getImagesByProduct(Long productId);
     void deleteImage(Long imageId);

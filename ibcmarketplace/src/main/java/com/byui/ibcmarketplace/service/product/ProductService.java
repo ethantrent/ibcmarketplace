@@ -123,7 +123,7 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategory(category);
+        return productRepository.findByCategoryName(category);
     }
 
     @Override

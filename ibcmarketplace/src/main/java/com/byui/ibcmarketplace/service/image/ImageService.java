@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.byui.ibcmarketplace.model.Image;
 import com.byui.ibcmarketplace.model.Product;
 import com.byui.ibcmarketplace.repository.ImageRepository;
-import com.byui.ibcmarketplace.repository.ProductRepository;
+import com.byui.ibcmarketplace.service.product.ProductRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +67,40 @@ public class ImageService implements IImageService {
             return imageRepository.save(image);
         } catch (IOException | SQLException e) {
             throw new RuntimeException("Failed to upload image: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public Image updateImage(Long imageId, MultipartFile file) {
+        try {
+            // Get existing image
+            Image existingImage = getImageById(imageId);
+
+            // Validate file
+            if (file.isEmpty()) {
+                throw new IllegalArgumentException("Cannot upload empty file");
+            }
+
+            // Validate file type
+            String contentType = file.getContentType();
+            if (contentType == null || !SUPPORTED_IMAGE_TYPES.contains(contentType)) {
+                throw new IllegalArgumentException("Unsupported file type. Supported types are: " + SUPPORTED_IMAGE_TYPES);
+            }
+
+            // Create new blob from file
+            byte[] bytes = file.getBytes();
+            Blob blob = new SerialBlob(bytes);
+
+            // Update image properties
+            existingImage.setFileName(generateUniqueFileName(file.getOriginalFilename()));
+            existingImage.setFileType(contentType);
+            existingImage.setImage(blob);
+            existingImage.setDownloadUrl(generateDownloadUrl(existingImage.getFileName()));
+
+            return imageRepository.save(existingImage);
+        } catch (IOException | SQLException e) {
+            throw new RuntimeException("Failed to update image: " + e.getMessage(), e);
         }
     }
 

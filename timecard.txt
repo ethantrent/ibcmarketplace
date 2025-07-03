@@ -26,3 +26,17 @@
 6/1/2025 | 5:00 | 2hr | Backend
 6/3/2025 | 8:00 | 2hr | Backend
 6/9/2025 | 7:35 | 2hr | Backend
+6/11/2025 | 6:48 | 2hr | Backend
+6/13/2025 | 9:00 | 2hr | Backend
+6/14/2025 | 6:10 | 1hr | Backend
+6/17/2025 | 7:45 | 2hr | Backend
+6/20/2025 | 5:50 | 1hr | Backend
+6/22/2025 | 7:00 | 2hr | Backend
+6/25/2025 | 2:00 | 1hr | Backend
+6/29/2025 | 9:00 | 1hr | Backend
+7/1/2025 | 10:15 | 1hr | Class - Docker Fundamentals
+7/2/2025 | 7:00 | 2hr | Backend
+7/3/2025 | 10:15 | 1hr | Class - Environment Variables/Shell Script
+7/1/2025 | 10:15 | 1hr | Class - [Insert Topic]
+7/1/2025 | 10:15 | 1hr | Class - Final Demo Day
+7/15/2025 | 10:15 | 1hr | Class - Presentation Day

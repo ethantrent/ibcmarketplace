@@ -28,30 +28,30 @@ public class CartController {
     @GetMapping("/{userId}")
     public ResponseEntity<APIResponse<CartDto>> getCart(@PathVariable Long userId) {
         CartDto cart = cartService.getCartByUserId(userId);
-        return ResponseEntity.ok(new APIResponse<>(true, "Cart fetched successfully", cart));
+        return ResponseEntity.ok(new APIResponse<>(cart, "Cart fetched successfully"));
     }
 
     @PostMapping("/{userId}/items")
     public ResponseEntity<APIResponse<CartDto>> addCartItem(@PathVariable Long userId, @Valid @RequestBody AddCartItemRequest request) {
         CartDto cart = cartService.addCartItem(userId, request);
-        return ResponseEntity.ok(new APIResponse<>(true, "Item added to cart", cart));
+        return ResponseEntity.ok(new APIResponse<>(cart, "Item added to cart"));
     }
 
     @PutMapping("/{userId}/items/{cartItemId}")
     public ResponseEntity<APIResponse<CartDto>> updateCartItem(@PathVariable Long userId, @PathVariable Long cartItemId, @Valid @RequestBody UpdateCartItemRequest request) {
         CartDto cart = cartService.updateCartItem(userId, cartItemId, request);
-        return ResponseEntity.ok(new APIResponse<>(true, "Cart item updated", cart));
+        return ResponseEntity.ok(new APIResponse<>(cart, "Cart item updated"));
     }
 
     @DeleteMapping("/{userId}/items/{cartItemId}")
     public ResponseEntity<APIResponse<Void>> removeCartItem(@PathVariable Long userId, @PathVariable Long cartItemId) {
         cartService.removeCartItem(userId, cartItemId);
-        return ResponseEntity.ok(new APIResponse<>(true, "Cart item removed", null));
+        return ResponseEntity.ok(new APIResponse<Void>(null, "Cart item removed"));
     }
 
     @DeleteMapping("/{userId}/clear")
     public ResponseEntity<APIResponse<Void>> clearCart(@PathVariable Long userId) {
         cartService.clearCart(userId);
-        return ResponseEntity.ok(new APIResponse<>(true, "Cart cleared", null));
+        return ResponseEntity.ok(new APIResponse<Void>(null, "Cart cleared"));
     }
 } 

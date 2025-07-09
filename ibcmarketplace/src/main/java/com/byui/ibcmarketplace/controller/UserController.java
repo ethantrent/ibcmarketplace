@@ -1,10 +1,7 @@
 package com.byui.ibcmarketplace.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.byui.ibcmarketplace.dto.APIResponse;
 import com.byui.ibcmarketplace.dto.UserDto;
 import com.byui.ibcmarketplace.dto.UserProfileDto;
-import com.byui.ibcmarketplace.model.User;
 import com.byui.ibcmarketplace.request.CreateUserRequest;
 import com.byui.ibcmarketplace.request.UpdateUserRequest;
 import com.byui.ibcmarketplace.service.user.IUserService;
@@ -32,53 +28,45 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     private final IUserService userService;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    private UserDto toDto(User user) {
-        return modelMapper.map(user, UserDto.class);
-    }
-
     @PostMapping
     public ResponseEntity<APIResponse<UserDto>> createUser(@Valid @RequestBody CreateUserRequest request) {
-        User user = userService.createUser(request);
-        return ResponseEntity.ok(new APIResponse<>(true, "User created successfully", toDto(user)));
+        UserDto user = userService.createUser(request);
+        return ResponseEntity.ok(new APIResponse<>(user, "User created successfully"));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse<UserDto>> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
-        User user = userService.updateUser(id, request);
-        return ResponseEntity.ok(new APIResponse<>(true, "User updated successfully", toDto(user)));
+        UserDto user = userService.updateUser(id, request);
+        return ResponseEntity.ok(new APIResponse<>(user, "User updated successfully"));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<APIResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok(new APIResponse<>(true, "User deleted successfully", null));
+        return ResponseEntity.ok(new APIResponse<Void>(null, "User deleted successfully"));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<APIResponse<UserDto>> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(new APIResponse<>(true, "User fetched successfully", toDto(user)));
+        UserDto user = userService.getUserById(id);
+        return ResponseEntity.ok(new APIResponse<>(user, "User fetched successfully"));
     }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<APIResponse<UserDto>> getUserByEmail(@PathVariable String email) {
-        User user = userService.getUserByEmail(email);
-        return ResponseEntity.ok(new APIResponse<>(true, "User fetched successfully", toDto(user)));
+        UserDto user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(new APIResponse<>(user, "User fetched successfully"));
     }
 
     @GetMapping
     public ResponseEntity<APIResponse<List<UserDto>>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserDto> dtos = users.stream().map(this::toDto).collect(Collectors.toList());
-        return ResponseEntity.ok(new APIResponse<>(true, "Users fetched successfully", dtos));
+        List<UserDto> users = userService.getAllUsers();
+        return ResponseEntity.ok(new APIResponse<>(users, "Users fetched successfully"));
     }
 
     @GetMapping("/{id}/profile")
     public ResponseEntity<APIResponse<UserProfileDto>> getUserProfile(@PathVariable Long id) {
         UserProfileDto profile = userService.getUserProfile(id);
-        return ResponseEntity.ok(new APIResponse<>(true, "User profile fetched successfully", profile));
+        return ResponseEntity.ok(new APIResponse<>(profile, "User profile fetched successfully"));
     }
 } 

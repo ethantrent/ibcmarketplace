@@ -1,16 +1,27 @@
 package com.byui.ibcmarketplace.service.order;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.byui.ibcmarketplace.dto.OrderDto;
 import com.byui.ibcmarketplace.dto.OrderItemDto;
 import com.byui.ibcmarketplace.dto.UserOrdersDto;
+import com.byui.ibcmarketplace.model.Cart;
+import com.byui.ibcmarketplace.model.CartItem;
 import com.byui.ibcmarketplace.model.Order;
 import com.byui.ibcmarketplace.model.OrderItem;
+import com.byui.ibcmarketplace.model.OrderStatus;
+import com.byui.ibcmarketplace.model.Product;
 import com.byui.ibcmarketplace.model.User;
+import com.byui.ibcmarketplace.repository.CartItemRepository;
+import com.byui.ibcmarketplace.repository.CartRepository;
+import com.byui.ibcmarketplace.repository.OrderItemRepository;
+import com.byui.ibcmarketplace.repository.OrderRepository;
+import com.byui.ibcmarketplace.repository.ProductRepository;
 import com.byui.ibcmarketplace.repository.UserRepository;
 import com.byui.ibcmarketplace.request.PlaceOrderRequest;
 
@@ -21,17 +32,48 @@ import lombok.RequiredArgsConstructor;
 public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
+    @Transactional
     public OrderDto placeOrder(PlaceOrderRequest request) {
-        // Implementation to be added
-        return null;
+        User user = userRepository.findById(request.getUserId())
+            .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("User not found with id: " + request.getUserId()));
+        Cart cart = cartRepository.findByUserId(user.getId())
+            .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Cart not found for user id: " + user.getId()));
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalStateException("Cart is empty");
+        }
+        Order order = new Order();
+        order.setUser(user);
+        order.setOrderDate(LocalDate.now());
+        order.setOrderStatus(OrderStatus.PENDING);
+        order.setTotalAmount(java.math.BigDecimal.ZERO);
+        for (CartItem cartItem : cart.getItems()) {
+            Product product = productRepository.findById(cartItem.getProduct().getId())
+                .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Product not found with id: " + cartItem.getProduct().getId()));
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProduct(product);
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(product.getPrice().multiply(java.math.BigDecimal.valueOf(cartItem.getQuantity())));
+            order.getOrderItems().add(orderItem);
+        }
+        order.updateTotalAmount();
+        Order savedOrder = orderRepository.save(order);
+        cart.getItems().clear();
+        cartRepository.save(cart);
+        return toDto(savedOrder);
     }
 
     @Override
     public OrderDto getOrderById(Long orderId) {
-        // Implementation to be added
-        return null;
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Order not found with id: " + orderId));
+        return toDto(order);
     }
 
     @Override
@@ -50,8 +92,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderDto> getAllOrders() {
-        // Implementation to be added
-        return null;
+        return orderRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
     }
 
     // --- Mapping methods ---

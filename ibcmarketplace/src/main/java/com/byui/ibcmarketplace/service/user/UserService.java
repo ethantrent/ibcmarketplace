@@ -26,7 +26,7 @@ public class UserService implements IUserService {
     private final IOrderService orderService;
 
     @Override
-    public User createUser(CreateUserRequest request) {
+    public UserDto createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email already exists");
         }
@@ -36,16 +36,16 @@ public class UserService implements IUserService {
         user.setLastName(request.getLastName());
         // TODO: Hash password before saving in production
         user.setPassword(request.getPassword());
-        return userRepository.save(user);
+        return toDto(userRepository.save(user));
     }
 
     @Override
-    public User updateUser(Long id, UpdateUserRequest request) {
+    public UserDto updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        return userRepository.save(user);
+        return toDto(userRepository.save(user));
     }
 
     @Override
@@ -57,20 +57,20 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+    public UserDto getUserById(Long id) {
+        return toDto(userRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id)));
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-            .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+    public UserDto getUserByEmail(String email) {
+        return toDto(userRepository.findByEmail(email)
+            .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email)));
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream().map(this::toDto).toList();
     }
 
     @Override

@@ -13,10 +13,12 @@ import com.byui.ibcmarketplace.model.Cart;
 import com.byui.ibcmarketplace.model.CartItem;
 import com.byui.ibcmarketplace.model.Product;
 import com.byui.ibcmarketplace.model.User;
+import com.byui.ibcmarketplace.repository.CartItemRepository;
+import com.byui.ibcmarketplace.repository.CartRepository;
+import com.byui.ibcmarketplace.repository.ProductRepository;
 import com.byui.ibcmarketplace.repository.UserRepository;
 import com.byui.ibcmarketplace.request.AddCartItemRequest;
 import com.byui.ibcmarketplace.request.UpdateCartItemRequest;
-import com.byui.ibcmarketplace.service.product.ProductRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

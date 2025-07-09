@@ -2,22 +2,25 @@ package com.byui.ibcmarketplace.service.product;
 
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.byui.ibcmarketplace.dto.ProductDto;
 import com.byui.ibcmarketplace.model.Cart;
 import com.byui.ibcmarketplace.model.CartItem;
 import com.byui.ibcmarketplace.model.Category;
 import com.byui.ibcmarketplace.model.Order;
 import com.byui.ibcmarketplace.model.OrderItem;
 import com.byui.ibcmarketplace.model.Product;
+import com.byui.ibcmarketplace.repository.CartItemRepository;
+import com.byui.ibcmarketplace.repository.CartRepository;
+import com.byui.ibcmarketplace.repository.OrderItemRepository;
+import com.byui.ibcmarketplace.repository.OrderRepository;
+import com.byui.ibcmarketplace.repository.ProductRepository;
 import com.byui.ibcmarketplace.request.AddProductRequest;
 import com.byui.ibcmarketplace.request.ProductUpdateRequest;
-import com.byui.ibcmarketplace.service.cart.CartItemRepository;
-import com.byui.ibcmarketplace.service.cart.CartRepository;
 import com.byui.ibcmarketplace.service.category.CategoryService;
-import com.byui.ibcmarketplace.service.order.OrderItemRepository;
-import com.byui.ibcmarketplace.service.order.OrderRepository;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,16 +35,18 @@ public class ProductService implements IProductService {
     private final OrderItemRepository orderItemRepository;
     private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
+    private final ModelMapper modelMapper;
 
     @Override
-    public Product addProducts(AddProductRequest request) {
+    public ProductDto addProducts(AddProductRequest request) {
         if (productExists(request.getName(), request.getBrand())) {
             throw new EntityExistsException(request.getName() + " already exists!");
         }
         
-        Category category = categoryService.getCategoryByName(request.getCategory().getName());
+        Category category = categoryService.getCategoryEntityByName(request.getCategory().getName());
         request.setCategory(category);
-        return productRepository.save(createProduct(request, category));
+        Product product = productRepository.save(createProduct(request, category));
+        return toDto(product);
     }
 
     private boolean productExists(String name, String brand) {
@@ -59,7 +64,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product updateProduct(ProductUpdateRequest request, Long productId) {
+    public ProductDto updateProduct(ProductUpdateRequest request, Long productId) {
         Product existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
         
@@ -70,11 +75,12 @@ public class ProductService implements IProductService {
         existingProduct.setDescription(request.getDescription());
         
         if (request.getCategory() != null) {
-            Category category = categoryService.getCategoryByName(request.getCategory().getName());
+            Category category = categoryService.getCategoryEntityByName(request.getCategory().getName());
             existingProduct.setCategory(category);
         }
         
-        return productRepository.save(existingProduct);
+        Product updated = productRepository.save(existingProduct);
+        return toDto(updated);
     }
 
     @Override
@@ -106,38 +112,43 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Product getProductById(Long productId) {
-        return productRepository.findById(productId)
+    public ProductDto getProductById(Long productId) {
+        Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + productId));
+        return toDto(product);
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll().stream().map(this::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByCategoryAndBrand(String category, String brand) {
-        return productRepository.findByCategoryNameAndBrand(category, brand);
+    public List<ProductDto> getProductsByCategoryAndBrand(String category, String brand) {
+        return productRepository.findByCategoryNameAndBrand(category, brand).stream().map(this::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategoryName(category);
+    public List<ProductDto> getProductsByCategory(String category) {
+        return productRepository.findByCategoryName(category).stream().map(this::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByBrandAndName(String brand, String name) {
-        return productRepository.findByBrandAndName(brand, name);
+    public List<ProductDto> getProductsByBrandAndName(String brand, String name) {
+        return productRepository.findByBrandAndName(brand, name).stream().map(this::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByBrand(String brand) {
-        return productRepository.findByBrand(brand);
+    public List<ProductDto> getProductsByBrand(String brand) {
+        return productRepository.findByBrand(brand).stream().map(this::toDto).toList();
     }
 
     @Override
-    public List<Product> getProductsByName(String name) {
-        return productRepository.findByName(name);
+    public List<ProductDto> getProductsByName(String name) {
+        return productRepository.findByName(name).stream().map(this::toDto).toList();
+    }
+
+    private ProductDto toDto(Product product) {
+        return modelMapper.map(product, ProductDto.class);
     }
 }

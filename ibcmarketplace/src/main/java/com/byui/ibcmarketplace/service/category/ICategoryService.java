@@ -2,16 +2,18 @@ package com.byui.ibcmarketplace.service.category;
 
 import java.util.List;
 
+import com.byui.ibcmarketplace.dto.CategoryDto;
+import com.byui.ibcmarketplace.dto.ProductDto;
 import com.byui.ibcmarketplace.model.Category;
-import com.byui.ibcmarketplace.model.Product;
 import com.byui.ibcmarketplace.request.CategoryRequest;
 
 public interface ICategoryService {
-    Category addCategory(CategoryRequest request);
-    Category updateCategory(CategoryRequest request, Long categoryId);
+    CategoryDto addCategory(CategoryRequest request);
+    CategoryDto updateCategory(CategoryRequest request, Long categoryId);
     void deleteCategory(Long categoryId);
-    Category getCategoryById(Long categoryId);
-    Category getCategoryByName(String name);
-    List<Category> getAllCategories();
-    List<Product> getProductsByCategory(Long categoryId);
+    CategoryDto getCategoryById(Long categoryId);
+    CategoryDto getCategoryByName(String name);
+    List<CategoryDto> getAllCategories();
+    List<ProductDto> getProductsByCategory(Long categoryId);
+    Category getCategoryEntityByName(String name);
 } 

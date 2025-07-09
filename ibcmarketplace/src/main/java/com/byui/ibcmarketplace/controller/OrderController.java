@@ -28,24 +28,24 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<APIResponse<OrderDto>> placeOrder(@Valid @RequestBody PlaceOrderRequest request) {
         OrderDto order = orderService.placeOrder(request);
-        return ResponseEntity.ok(new APIResponse<>(true, "Order placed successfully", order));
+        return ResponseEntity.ok(new APIResponse<>(order, "Order placed successfully"));
     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<APIResponse<OrderDto>> getOrderById(@PathVariable Long orderId) {
         OrderDto order = orderService.getOrderById(orderId);
-        return ResponseEntity.ok(new APIResponse<>(true, "Order fetched successfully", order));
+        return ResponseEntity.ok(new APIResponse<>(order, "Order fetched successfully"));
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<APIResponse<UserOrdersDto>> getOrdersByUser(@PathVariable Long userId) {
         UserOrdersDto userOrders = orderService.getOrdersByUserId(userId);
-        return ResponseEntity.ok(new APIResponse<>(true, "Orders fetched successfully", userOrders));
+        return ResponseEntity.ok(new APIResponse<>(userOrders, "Orders fetched successfully"));
     }
 
     @GetMapping
     public ResponseEntity<APIResponse<List<OrderDto>>> getAllOrders() {
         List<OrderDto> orders = orderService.getAllOrders();
-        return ResponseEntity.ok(new APIResponse<>(true, "All orders fetched successfully", orders));
+        return ResponseEntity.ok(new APIResponse<>(orders, "All orders fetched successfully"));
     }
 } 
